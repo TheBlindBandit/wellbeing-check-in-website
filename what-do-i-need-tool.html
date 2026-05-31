@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Do I Need Right Now?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+
+  :root {
+    --stone: #f5f0e8;
+    --warm-white: #faf8f4;
+    --bark: #6b5c4a;
+    --moss: #4a6b5c;
+    --sage: #7a9b8a;
+    --clay: #a07060;
+    --mist: #c8d4cc;
+    --shadow: rgba(107, 92, 74, 0.12);
+    --text: #3a3028;
+    --text-light: #7a6a5a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--warm-white);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .outer {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--mist);
+    margin-bottom: 36px;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    color: var(--bark);
+    margin-bottom: 10px;
+  }
+
+  header p {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+  }
+
+  .step {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .step.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .step h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+    color: var(--bark);
+    margin-bottom: 8px;
+    line-height: 1.3;
+    font-style: italic;
+  }
+
+  .step .subtitle {
+    font-size: 0.87rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option-btn {
+    background: var(--stone);
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+  }
+
+  .option-btn:hover {
+    border-color: var(--sage);
+    background: #eef3f0;
+    transform: translateX(3px);
+  }
+
+  .option-btn .icon {
+    font-size: 1.4rem;
+    width: 32px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .option-btn .label {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .option-btn .sublabel {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-weight: 300;
+    line-height: 1.4;
+    margin-top: 2px;
+  }
+
+  /* Hyperarousal check */
+  .arousal-check {
+    background: #f0f4f1;
+    border-left: 3px solid var(--sage);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+
+  .arousal-check p {
+    font-size: 0.88rem;
+    color: var(--bark);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Result card */
+  .result-card {
+    background: var(--stone);
+    border-radius: 16px;
+    padding: 30px 28px;
+    border: 1px solid var(--mist);
+    margin-bottom: 20px;
+  }
+
+  .result-type {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .result-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--bark);
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  .result-desc {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 22px;
+    font-weight: 300;
+  }
+
+  .practices-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bark);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .practice-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .practice-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .practice-list li .p-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+  .practice-list li .p-text { font-size: 0.87rem; line-height: 1.5; color: var(--text); }
+
+  .practice-list li .p-min {
+    font-size: 0.75rem;
+    color: var(--sage);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    margin-top: 2px;
+  }
+
+  /* MED box */
+  .med-box {
+    background: rgba(74, 107, 92, 0.09);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 18px;
+  }
+
+  .med-box .med-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--moss);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .med-box p {
+    font-size: 0.87rem;
+    color: var(--text);
+    line-height: 1.6;
+    font-weight: 300;
+    font-style: italic;
+  }
+
+  /* Nervous system alert */
+  .ns-alert {
+    background: #f5f0e8;
+    border: 1.5px solid var(--clay);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+    display: none;
+  }
+
+  .ns-alert.visible { display: block; }
+
+  .ns-alert h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--clay);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  .ns-alert p, .ns-alert li {
+    font-size: 0.86rem;
+    color: var(--text);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .ns-alert ol { padding-left: 18px; margin-top: 8px; }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--moss);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--bark); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-light);
+    border: 1.5px solid var(--mist);
+  }
+
+  .btn-secondary:hover { border-color: var(--bark); color: var(--bark); }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--mist);
+    border-radius: 2px;
+    margin-bottom: 36px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--moss));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px 0 20px;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    border-top: 1px solid var(--mist);
+    margin-top: 40px;
+  }
+
+  /* Breathing circle */
+  .breath-guide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .circle {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--sage);
+    opacity: 0.7;
+    animation: breathe 7s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(0.7); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 0.85; }
+    60% { transform: scale(1); opacity: 0.85; }
+  }
+
+  .breath-label {
+    font-size: 0.8rem;
+    color: var(--sage);
+    letter-spacing: 0.06em;
+    animation: breatheText 7s ease-in-out infinite;
+  }
+
+  @keyframes breatheText {
+    0%, 100% { opacity: 0.6; }
+    20% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+</style>
+</head>
+<body>
+<div class="outer">
+  <header>
+    <h1>What Do I Need Right Now?</h1>
+    <p>A gentle check-in to help you find the right rest for this moment.<br>Follow the questions at your own pace.</p>
+  </header>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+  </div>
+
+  <!-- Step 0: Hyperarousal check -->
+  <div class="step active" id="step0">
+    <div class="step-label">Before we begin</div>
+    <h2>How settled do you feel right now?</h2>
+    <p class="subtitle">No right answer — this helps us start in the right place.</p>
+    <div class="options">
+      <button class="option-btn" onclick="goTo('step1')">
+        <span class="icon">🌊</span>
+        <div>
+          <div class="label">Somewhere in the middle — tired, but not spinning out</div>
+          <div class="sublabel">I can sit here and answer questions</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="showNSAlert()">
+        <span class="icon">⚡</span>
+        <div>
+          <div class="label">Activated, restless, or wound up — hard to settle</div>
+          <div class="sublabel">Mind racing, body tense, can't slow down</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="goTo('step1')">
+        <span class="icon">🌑</span>
+        <div>
+          <div class="label">Flat, numb, or depleted — low in everything</div>
+          <div class="sublabel">Not much energy for anything right now</div>
+        </div>
+      </button>
+    </div>
+
+    <div class="ns-alert" id="nsAlert">
+      <h4>Your nervous system may need regulating before resting.</h4>
+      <p>When the system is highly activated, it can't receive rest until it begins to downshift. Try this first:</p>
+      <ol>
+        <li><strong>Physiological sigh:</strong> Double inhale through the nose (breathe in, then top up), then one long slow exhale through the mouth. Repeat 3 times.</li>
+        <li><strong>5-4-3-2-1 grounding:</strong> 5 things you can see. 4 you can touch. 3 you can hear. 2 you can smell. 1 you can taste.</li>
+        <li>Then continue to find your rest type below.</li>
+      </ol>
+      <div class="breath-guide">
+        <div class="circle"></div>
+        <span class="breath-label">breathe with this</span>
+      </div>
+      <button class="btn btn-secondary" onclick="goTo('step1')" style="margin-top:4px">Continue when ready →</button>
+    </div>
+  </div>
+
+  <!-- Step 1: Body -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1 of 3 — Body</div>
+    <h2>What does your body feel like right now?</h2>
+    <p class="subtitle">Choose what's closest. Trust your first instinct.</p>
+    <div class="options">
+      <button class="option-btn" onclick="select('body', 'tense', 'step2')">
+        <span class="icon">🪢</span>
+        <div>
+          <div class="label">Tense, tight, or braced</div>
+          <div class="sublabel">Shoulders up, jaw tight, holding somewhere</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('body', 'heavy', 'step2')">
+        <span class="icon">🪨</span>
+        <div>
+          <div class="label">Heavy, sore, or exhausted</div>
+          <div class="sublabel">Limbs heavy, physically worn, aching</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('body', 'restless', 'step2')">
+        <span class="icon">🌀</span>
+        <div>
+          <div class="label">Restless or activated</div>
+          <div class="sublabel">Fidgety, hard to be still, agitated energy</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('body', 'numb', 'step2')">
+        <span class="icon">🫧</span>
+        <div>
+          <div class="label">Numb or disconnected from my body</div>
+          <div class="sublabel">Difficult to feel much, floating, distant</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('body', 'ok', 'step2')">
+        <span class="icon">🌿</span>
+        <div>
+          <div class="label">Reasonably okay, no strong signal</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Mind -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2 of 3 — Mind</div>
+    <h2>What is your mind doing?</h2>
+    <p class="subtitle">Again, closest answer. No judgment.</p>
+    <div class="options">
+      <button class="option-btn" onclick="select('mind', 'racing', 'step3')">
+        <span class="icon">🌪️</span>
+        <div>
+          <div class="label">Racing, busy, or spinning</div>
+          <div class="sublabel">Thoughts looping, can't slow down, reviewing things</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('mind', 'foggy', 'step3')">
+        <span class="icon">🌫️</span>
+        <div>
+          <div class="label">Foggy, slow, or unclear</div>
+          <div class="sublabel">Hard to think, words hard to find, sluggish</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('mind', 'scattered', 'step3')">
+        <span class="icon">🌬️</span>
+        <div>
+          <div class="label">Scattered or unfocused</div>
+          <div class="sublabel">Can't settle on anything, attention jumping</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('mind', 'worried', 'step3')">
+        <span class="icon">🌑</span>
+        <div>
+          <div class="label">Anxious or worried</div>
+          <div class="sublabel">Anticipating problems, scanning for threat</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('mind', 'quiet', 'step3')">
+        <span class="icon">🌙</span>
+        <div>
+          <div class="label">Quiet or settled — not much activity</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3: Emotion -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3 of 3 — Emotions</div>
+    <h2>What is the emotional weather?</h2>
+    <p class="subtitle">Even a faint impression counts.</p>
+    <div class="options">
+      <button class="option-btn" onclick="select('mood', 'heavy', 'result')">
+        <span class="icon">🌧️</span>
+        <div>
+          <div class="label">Heavy, sad, or burdened</div>
+          <div class="sublabel">Something weighing on me, grief-adjacent, low</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('mood', 'flat', 'result')">
+        <span class="icon">🏜️</span>
+        <div>
+          <div class="label">Flat, numb, or emotionally absent</div>
+          <div class="sublabel">Not much feeling either way, grey</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('mood', 'anxious', 'result')">
+        <span class="icon">⚡</span>
+        <div>
+          <div class="label">Anxious, tight, or dread-y</div>
+          <div class="sublabel">Knot of worry, low-grade fear, anticipating</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('mood', 'irritable', 'result')">
+        <span class="icon">🔥</span>
+        <div>
+          <div class="label">Irritable, edgy, or resentful</div>
+          <div class="sublabel">Short fuse, everything feels too much</div>
+        </div>
+      </button>
+      <button class="option-btn" onclick="select('mood', 'ok', 'result')">
+        <span class="icon">☁️</span>
+        <div>
+          <div class="label">Okay or mostly neutral</div>
+          <div class="sublabel">Nothing strong either way</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="step" id="result">
+    <div id="resultContent"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="restart()">Start over</button>
+      <button class="btn btn-secondary" onclick="window.print()">Print this</button>
+    </div>
+  </div>
+
+  <footer>
+    Rest & Wellbeing Operating System — Decision Support Tool<br>
+    Take this gently. There are no wrong answers.
+  </footer>
+</div>
+
+<script>
+const answers = {};
+let progressSteps = 0;
+
+function setProgress(pct) {
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function showNSAlert() {
+  document.getElementById('nsAlert').classList.add('visible');
+}
+
+function select(key, value, nextStep) {
+  answers[key] = value;
+  goTo(nextStep);
+}
+
+function goTo(stepId) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(stepId).classList.add('active');
+  const progressMap = { step0: 0, step1: 25, step2: 50, step3: 75, result: 100 };
+  setProgress(progressMap[stepId] || 0);
+  if (stepId === 'result') showResult();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  answers.body = null; answers.mind = null; answers.mood = null;
+  document.getElementById('nsAlert').classList.remove('visible');
+  goTo('step0');
+}
+
+const restTypes = {
+  physical_passive: {
+    name: 'Physical Rest — Passive',
+    emoji: '🛋️',
+    desc: 'Your body needs to be fully supported and not required to do anything. This is less about sleep and more about releasing the effort of holding yourself upright and braced.',
+    practices: [
+      { icon: '🧘', label: 'Yin yoga', min: '20–40 min', note: 'Supported, long-held poses. Nothing to achieve.' },
+      { icon: '🛁', label: 'Warm bath or shower', min: '15 min', note: 'Water naturally interrupts the stress response.' },
+      { icon: '🪴', label: 'Lie on the floor', min: '10 min', note: 'No agenda. Let gravity hold you.' },
+      { icon: '🌡️', label: 'Heat or cold therapy', min: '10 min', note: 'Heating pad, warm compress, or cool cloth.' },
+    ],
+    med: 'The smallest version: lie down completely for 5 minutes. No phone. Close your eyes. That is enough to start.'
+  },
+  mental: {
+    name: 'Mental Rest',
+    emoji: '🌾',
+    desc: 'Your directed attention is fatigued. The thinking, processing, deciding, and ruminating need to pause. This requires low-demand input — not stimulation, and not nothing.',
+    practices: [
+      { icon: '🌿', label: 'Sit outside without your phone', min: '10–20 min', note: 'Let your attention go where it wants.' },
+      { icon: '🚶', label: 'Walk slowly without earphones', min: '15–20 min', note: 'Soft attention, no destination.' },
+      { icon: '👁️', label: 'Look out a window for 5 minutes', min: '5 min', note: 'Let the scenery come to you.' },
+      { icon: '📚', label: 'Read fiction for pleasure', min: '15–30 min', note: 'Not to learn — to follow a story.' },
+    ],
+    med: 'The smallest version: look at something natural for 3 minutes without any agenda. Trees, sky, water, plants. Do not scroll.'
+  },
+  sensory: {
+    name: 'Sensory Rest',
+    emoji: '🌑',
+    desc: 'Your sensory processing systems are overloaded. Eyes, ears, and nervous system need a reduction in input. This is particularly important given migraine vulnerability.',
+    practices: [
+      { icon: '💡', label: 'Dim or turn off lights', min: 'Now', note: 'Even 30% less light makes a measurable difference.' },
+      { icon: '🤫', label: 'Create quiet — reduce noise', min: 'Now', note: 'Earplugs, white noise, or genuine silence.' },
+      { icon: '📵', label: 'No screens for 20 minutes', min: '20 min', note: 'Your visual system needs genuine rest.' },
+      { icon: '🧤', label: 'Soft textures, comfortable clothing', min: '5 min', note: 'Reduce tactile input demands.' },
+    ],
+    med: 'The smallest version: sit in a room with the lights dimmed and no phone for 5 minutes. Just that.'
+  },
+  emotional: {
+    name: 'Emotional Rest',
+    emoji: '🌊',
+    desc: 'You have been managing, containing, performing, or suppressing. The emotional system needs space to exist authentically — without needing to be appropriate or productive.',
+    practices: [
+      { icon: '📓', label: 'Unstructured journaling', min: '10–20 min', note: 'No prompt. No goal. Just what comes.' },
+      { icon: '😭', label: 'Let yourself feel — without fixing', min: 'As needed', note: 'Permission is the practice here.' },
+      { icon: '🎵', label: 'Music that matches your mood', min: '15 min', note: 'Not uplifting music — the music you actually want.' },
+      { icon: '🫂', label: 'Talk honestly with someone safe', min: '20–30 min', note: 'If available. Someone who asks nothing of you.' },
+    ],
+    med: 'The smallest version: write three sentences without editing — whatever is actually happening inside. Don\'t fix it. Don\'t explain it. Just write it.'
+  },
+  creative: {
+    name: 'Creative Rest',
+    emoji: '🎨',
+    desc: 'The creative and imaginative well is depleted. You need exposure to beauty, inspiration, and imagination — without needing to produce anything in return.',
+    practices: [
+      { icon: '📖', label: 'Read fiction or poetry for pleasure', min: '20 min', note: 'Enter someone else\'s imagination.' },
+      { icon: '🎵', label: 'Listen to music without doing anything else', min: '15–20 min', note: 'Pure listening. No task attached.' },
+      { icon: '🌿', label: 'Nature bathing — beauty for its own sake', min: '20 min', note: 'Not hiking for exercise. Just being somewhere beautiful.' },
+      { icon: '🖼️', label: 'Look at art, photography, or beautiful things', min: '10 min', note: 'Let beauty in without having to do anything with it.' },
+    ],
+    med: 'The smallest version: look at one image that you find genuinely beautiful for 60 seconds. Let it register.'
+  },
+  social: {
+    name: 'Social Rest',
+    emoji: '🧩',
+    desc: 'If you\'ve been performing, managing others\' emotions, or being "on" — you need solitude or time with someone who requires absolutely nothing of you.',
+    practices: [
+      { icon: '🚪', label: 'Deliberate solitude — no social obligations', min: '30–60 min', note: 'Being alone intentionally is different from being alone by default.' },
+      { icon: '🌳', label: 'Solo nature time', min: '20–40 min', note: 'Just you and the environment.' },
+      { icon: '☕', label: 'Easeful time with a restorative person', min: '30 min', note: 'Someone who doesn\'t need you to manage them.' },
+      { icon: '🎮', label: 'Low-stakes solo activity', min: '20 min', note: 'A game, puzzle, or hobby with no social component.' },
+    ],
+    med: 'The smallest version: 10 minutes of guaranteed solitude where you owe no one anything. No texts, no presence.'
+  },
+  spiritual: {
+    name: 'Spiritual Rest',
+    emoji: '🧭',
+    desc: 'A sense of meaning, connection, or grounding in something larger than the immediate is needed. This doesn\'t require belief — it requires contact with depth.',
+    practices: [
+      { icon: '✍️', label: 'Journaling around purpose or meaning', min: '15–20 min', note: 'What matters most right now? What are you for?' },
+      { icon: '🌲', label: 'Nature walk with no destination', min: '20–30 min', note: 'Let the walk be the point.' },
+      { icon: '🛶', label: 'Paddleboarding or water time', min: '30–60 min', note: 'When energy permits — deeply restorative for this type.' },
+      { icon: '🧘', label: 'Meditation or contemplative practice', min: '10–20 min', note: 'The 10% Happier app. No agenda.' },
+    ],
+    med: 'The smallest version: take three slow breaths outside, and ask yourself: What do I actually care about right now? Don\'t answer. Just ask.'
+  },
+  transition: {
+    name: 'Transition First',
+    emoji: '🌉',
+    desc: 'Your nervous system hasn\'t fully left the previous activity yet. The "rest" you choose won\'t fully land until you create a bridge. This is normal — and solvable.',
+    practices: [
+      { icon: '💨', label: 'Physiological sigh × 3', min: '2 min', note: 'Double inhale, long exhale. Repeat three times. This is the fastest-acting parasympathetic activator.' },
+      { icon: '✍️', label: 'Write down every open loop', min: '3 min', note: 'Brain dump onto paper. Nothing is forgotten; the mind can let go.' },
+      { icon: '👔', label: 'Change clothes or physical environment', min: '2 min', note: 'Physical cue that the context has changed.' },
+      { icon: '🚪', label: 'Close the laptop / clear the workspace', min: '2 min', note: 'Closing the physical loop helps close the mental one.' },
+    ],
+    med: 'The smallest version: Write three words that sum up what you were just doing, then write "done" next to them. Close that tab in your head.'
+  }
+};
+
+function getRestType(body, mind, mood) {
+  // Scoring-based logic
+  let scores = {
+    physical_passive: 0,
+    mental: 0,
+    sensory: 0,
+    emotional: 0,
+    creative: 0,
+    social: 0,
+    spiritual: 0,
+    transition: 0
+  };
+
+  // Body signals
+  if (body === 'tense') { scores.physical_passive += 3; scores.sensory += 2; }
+  if (body === 'heavy') { scores.physical_passive += 4; scores.mental += 1; }
+  if (body === 'restless') { scores.transition += 3; scores.sensory += 2; scores.mental += 1; }
+  if (body === 'numb') { scores.emotional += 3; scores.physical_passive += 2; }
+  if (body === 'ok') { scores.mental += 1; scores.creative += 1; }
+
+  // Mind signals
+  if (mind === 'racing') { scores.mental += 3; scores.transition += 2; scores.sensory += 1; }
+  if (mind === 'foggy') { scores.physical_passive += 3; scores.mental += 2; }
+  if (mind === 'scattered') { scores.mental += 3; scores.sensory += 2; }
+  if (mind === 'worried') { scores.emotional += 3; scores.sensory += 2; scores.mental += 1; }
+  if (mind === 'quiet') { scores.creative += 2; scores.spiritual += 2; scores.social += 1; }
+
+  // Mood signals
+  if (mood === 'heavy') { scores.emotional += 4; scores.physical_passive += 1; }
+  if (mood === 'flat') { scores.emotional += 2; scores.creative += 3; scores.sensory += 1; }
+  if (mood === 'anxious') { scores.sensory += 3; scores.physical_passive += 2; scores.mental += 1; }
+  if (mood === 'irritable') { scores.sensory += 3; scores.social += 2; scores.transition += 1; }
+  if (mood === 'ok') { scores.spiritual += 2; scores.creative += 2; scores.social += 1; }
+
+  // Find highest score
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  return sorted[0][0];
+}
+
+function showResult() {
+  const type = getRestType(answers.body, answers.mind, answers.mood);
+  const data = restTypes[type];
+
+  const practicesHtml = data.practices.map(p => `
+    <li>
+      <span class="p-icon">${p.icon}</span>
+      <div>
+        <div class="p-text"><strong>${p.label}</strong> — ${p.note}</div>
+        <div class="p-min">Minimum: ${p.min}</div>
+      </div>
+    </li>
+  `).join('');
+
+  document.getElementById('resultContent').innerHTML = `
+    <div class="step-label">Your rest type</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--bark);font-style:italic;margin-bottom:24px;">
+      Based on what you shared, the rest you need right now is:
+    </h2>
+    <div class="result-card">
+      <div class="result-type">${data.emoji} Rest Type</div>
+      <h3>${data.name}</h3>
+      <p class="result-desc">${data.desc}</p>
+      <div class="practices-label">What to try</div>
+      <ul class="practice-list">${practicesHtml}</ul>
+      <div class="med-box">
+        <div class="med-title">Minimum effective dose</div>
+        <p>${data.med}</p>
+      </div>
+    </div>
+    <div style="background:var(--stone);border-radius:12px;padding:18px 22px;border:1px solid var(--mist);">
+      <p style="font-size:0.86rem;color:var(--text-light);line-height:1.7;font-weight:300;font-style:italic;">
+        <strong style="color:var(--bark);font-style:normal;">Remember:</strong> You don't have to rest "correctly." The activity is a vehicle. 
+        The destination is simply permission to tend to yourself for a little while. 
+        Imperfect rest still restores. Begin with the smallest version, and let it be enough.
+      </p>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
